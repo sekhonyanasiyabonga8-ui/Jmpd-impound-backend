@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "JMPD Grade A VTS Impound Management Backend",
   "main": "server.js",
-  "scripts"
+  "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.19.2" 
-    "mongoose": "^8.3.1"
-       "pg" "^8.11.3"
+    "express": "^4.19.2",
+    "mongoose": "^8.3.1",
+    "pg": "^8.11.3"
   }
 }
+
