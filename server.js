@@ -6,13 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// PostgreSQL Connection Settings
+// PostgreSQL Connection Settings using Render Environment Variable
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'vts_impound',
-    password: 'password',
-    port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // GET: Fetch all registered vehicles
@@ -47,7 +46,7 @@ app.put('/api/vehicles/:plate/status', async (req, res) => {
     const { status } = req.body;
     try {
         const result = await pool.query(
-            'UPDATE impound_registry SET status = $1 WHERE plate = $2 RETURNING *',
+            `UPDATE impound_registry SET status = $1 WHERE plate = $2 RETURNING *`,
             [status, plate]
         );
         res.json(result.rows[0]);
@@ -56,7 +55,7 @@ app.put('/api/vehicles/:plate/status', async (req, res) => {
     }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`VTS API Server running on port ${PORT}`);
 });
