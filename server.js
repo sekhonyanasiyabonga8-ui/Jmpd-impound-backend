@@ -8,16 +8,16 @@ app.use(express.json());
 
 // PostgreSQL Connection Settings using Render Environment Variable
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 // GET: Fetch all registered vehicles
 app.get('/api/vehicles', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM impound_registry ORDER BY id DESC');
+        const result = await pool.query('SELECT plate, vin, make_model, engine_no, jmpdref, owner_phone, refcode FROM impound_registry ORDER BY id DESC');
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
