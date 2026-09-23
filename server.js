@@ -57,6 +57,13 @@ app.put('/api/vehicles/:plate/status', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+// Auto-insert a test vehicle on startup if table is empty
+pool.query(`
+  INSERT INTO impound_registry (plate, vin, make_model, engine_no, jmpd_ref, owner_phone, ref_code)
+  VALUES ('ABC123GP', '12345', 'Toyota Corolla', 'ENG999', 'REF123', '0821234567', 'CODE1')
+  ON CONFLICT (plate) DO NOTHING;
+`).catch(err => console.log("Seed note:", err.message));
+
 app.listen(PORT, () => {
     console.log(`VTS API Server running on port ${PORT}`);
 });
