@@ -17,7 +17,7 @@ const pool = new Pool({
 // GET: Fetch all registered vehicles
 app.get('/api/vehicles', async (req, res) => {
     try {
-        const result = await pool.query('SELECT plate, vin, make_model, engine_no, jmpdref, owner_phone, refcode FROM impound_registry ORDER BY id DESC');
+        const result = await pool.query('SELECT plate, vin, make_model, engine_no, jmpd_ref, owner_phone, ref_code FROM impound_registry ORDER BY id DESC');
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
