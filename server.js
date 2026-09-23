@@ -55,7 +55,6 @@ app.put('/api/vehicles/:plate/status', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 const PORT = process.env.PORT || 3000;
-5t
 app.listen(PORT, () => {
     console.log(`VTS API Server running on port ${PORT}`);
 });
