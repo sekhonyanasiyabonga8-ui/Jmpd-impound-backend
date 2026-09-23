@@ -14,13 +14,14 @@ const pool = new Pool({
     }
 });
 
-// GET: Fetch all registered vehicles
+// GET: Fetch all registered vehicles with detailed error tracking
 app.get('/api/vehicles', async (req, res) => {
     try {
         const result = await pool.query('SELECT plate, vin, make_model, engine_no, jmpd_ref, owner_phone, ref_code FROM impound_registry ORDER BY id DESC');
         res.json(result.rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Database Error:", err);
+        res.status(500).json({ error: err.message || "Unknown database error", details: err.detail || err.code });
     }
 });
 
