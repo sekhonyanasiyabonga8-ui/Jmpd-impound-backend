@@ -19,18 +19,24 @@ app.get('/', (req, res) => {
 
 app.get('/api/test-db', async (req, res) => {
   try {
-    const result = await pool.query('SELECT NOW()');
+    const client = await pool.connect();
+    const result = await client.query('SELECT NOW()');
+    client.release();
     res.json({ status: 'connected', time: result.rows[0].now });
   } catch (err) {
+    console.error("DB Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/api/vehicles', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM impound_registry');
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM impound_registry');
+    client.release();
     res.json(result.rows);
   } catch (err) {
+    console.error("DB Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
