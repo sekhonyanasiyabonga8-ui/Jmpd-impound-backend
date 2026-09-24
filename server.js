@@ -21,14 +21,22 @@ pool.on('error', (err, client) => {
   console.error('Unexpected error on idle PostgreSQL client', err);
 });
 
-// GET: Fetch all registered vehicles with detailed error tracking
+// Root homepage route
+app.get('/', (req, res) => {
+  res.send('JMPD Impound API is live and running!');
+});
+
+// GET: Fetch all registered vehicles with live logs
 app.get('/api/vehicles', async (req, res) => {
+  console.log("Received request for /api/vehicles");
   try {
+    console.log("Attempting database query...");
     const result = await pool.query('SELECT plate, vin, make_model, engine_no, jmpd_ref, owner_phone, ref_code FROM impound_registry');
+    console.log("Query successful, rows found:", result.rows.length);
     res.json(result.rows);
   } catch (err) {
-    console.error("Database Error:", err);
-    res.status(500).json({ error: err.message || "Unknown database error", details: err.detail || err.code });
+    console.error("Database Error Caught:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -69,4 +77,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`VTS API Server running on port ${PORT}`);
 });
-
