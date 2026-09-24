@@ -6,12 +6,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// PostgreSQL Connection Settings using Render Environment Variable
+// PostgreSQL Connection Settings optimized for Render
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  connectionTimeoutMillis: 10000, // Timeout after 10 seconds if connection fails
+  idleTimeoutMillis: 30000 // Close idle clients after 30 seconds
+});
+
+// Handle unexpected errors on idle clients
+pool.on('error', (err, client) => {
+  console.error('Unexpected error on idle PostgreSQL client', err);
 });
 
 // GET: Fetch all registered vehicles with detailed error tracking
@@ -37,6 +44,7 @@ app.post('/api/vehicles', async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
+    console.error("Insert Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -52,6 +60,7 @@ app.put('/api/vehicles/:plate/status', async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
+    console.error("Update Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -60,3 +69,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`VTS API Server running on port ${PORT}`);
 });
+
