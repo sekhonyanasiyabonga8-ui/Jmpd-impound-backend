@@ -19,24 +19,20 @@ app.get('/', (req, res) => {
 
 app.get('/api/test-db', async (req, res) => {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT NOW()');
-    client.release();
+    const result = await pool.query('SELECT NOW()');
     res.json({ status: 'connected', time: result.rows[0].now });
   } catch (err) {
-    console.error("DB Error:", err);
+    console.error("Database Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/api/vehicles', async (req, res) => {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM impound_registry');
-    client.release();
+    const result = await pool.query('SELECT plate, vin, make_model, engine_no, jmpd_ref, owner_phone, ref_code FROM impound_registry');
     res.json(result.rows);
   } catch (err) {
-    console.error("DB Error:", err);
+    console.error("Database Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -45,3 +41,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
