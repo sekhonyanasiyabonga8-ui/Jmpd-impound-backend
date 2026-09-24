@@ -23,6 +23,17 @@ app.get('/', (req, res) => {
   res.send('JMPD Impound API is live and running!');
 });
 
+// Test database connectivity directly
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const timeResult = await pool.query('SELECT NOW()');
+    res.json({ success: true, serverTime: timeResult.rows[0].now });
+  } catch (err) {
+    console.error("Test DB Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/vehicles', async (req, res) => {
   console.log("Received request for /api/vehicles");
   try {
