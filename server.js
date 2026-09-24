@@ -10,42 +10,32 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
-  },
-  connectionTimeoutMillis: 10000,
-  idleTimeoutMillis: 30000
-});
-
-pool.on('error', (err, client) => {
-  console.error('Unexpected error on idle PostgreSQL client', err);
+  }
 });
 
 app.get('/', (req, res) => {
-  res.send('JMPD Impound API is live and running!');
+  res.send('API is live');
 });
 
-// Test database connectivity directly
 app.get('/api/test-db', async (req, res) => {
   try {
-    const timeResult = await pool.query('SELECT NOW()');
-    res.json({ success: true, serverTime: timeResult.rows[0].now });
+    const result = await pool.query('SELECT NOW()');
+    res.json({ status: 'connected', time: result.rows[0].now });
   } catch (err) {
-    console.error("Test DB Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/api/vehicles', async (req, res) => {
-  console.log("Received request for /api/vehicles");
   try {
-    const result = await pool.query('SELECT plate, vin, make_model, engine_no, jmpd_ref, owner_phone, ref_code FROM impound_registry');
+    const result = await pool.query('SELECT * FROM impound_registry');
     res.json(result.rows);
   } catch (err) {
-    console.error("Database Error Caught:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`VTS API Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
