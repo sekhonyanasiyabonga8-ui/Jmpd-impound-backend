@@ -1,6 +1,6 @@
 const express = require('express');
 const { Pool } = require('pg');
-const cors = require('cors');
+const cors = require('cars');
 
 const app = express();
 app.use(cors());
