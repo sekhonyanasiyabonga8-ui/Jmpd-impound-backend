@@ -1,25 +1,27 @@
 const express = require('express');
 const { Pool } = require('pg');
-const cors = require('cors'); //  Fixed typo from 'cars' to 'cors'
+const cors = require('cors'); //  FIXED: Corrected typo from 'cars' to 'cors'
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Ensure the connection string forces SSL mode for Render external Postgres
 const connectionString = process.env.DATABASE_URL;
-
-//  Dynamic SSL config: Required for cloud Neon/Render, disabled for local offline testing
-const isProduction = process.env.NODE_ENV === 'production';
 
 const pool = new Pool({
   connectionString: connectionString,
-  ssl: isProduction ? { rejectUnauthorized: false } : false
+  ssl: {
+    rejectUnauthorized: false // Required for secure cloud communication with Neon
+  }
 });
 
+// Base endpoint to verify the service is running
 app.get('/', (req, res) => {
   res.send('API is live');
 });
 
+// Endpoint to test connection stability between Render and Neon
 app.get('/api/test-db', async (req, res) => {
   try {
     const client = await pool.connect();
@@ -32,6 +34,7 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// Endpoint to fetch your JMPD impound registry data
 app.get('/api/vehicles', async (req, res) => {
   try {
     const client = await pool.connect();
