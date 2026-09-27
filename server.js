@@ -1,19 +1,19 @@
 const express = require('express');
 const { Pool } = require('pg');
-const cors = require('cars');
+const cors = require('cors'); //  Fixed typo from 'cars' to 'cors'
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Ensure the connection string forces SSL mode for Render external Postgres
 const connectionString = process.env.DATABASE_URL;
+
+//  Dynamic SSL config: Required for cloud Neon/Render, disabled for local offline testing
+const isProduction = process.env.NODE_ENV === 'production';
 
 const pool = new Pool({
   connectionString: connectionString,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: isProduction ? { rejectUnauthorized: false } : false
 });
 
 app.get('/', (req, res) => {
